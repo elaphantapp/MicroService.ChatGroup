@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 project(chatgroupService)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-set(SOURCE_FILES main.cpp
+set(SOURCE_FILES
         source/Tools/Log.hpp
         source/Tools/Log.cpp
         source/Common/CommonVar.h
@@ -27,8 +27,8 @@ INCLUDE_DIRECTORIES(lib/include/Elastos.SDK.Contact)
 INCLUDE_DIRECTORIES(lib/include/Elastos.SDK.Keypair.C)
 LINK_DIRECTORIES("source/")
 
-add_executable(chatgroupService ${SOURCE_FILES})
+add_library(chatgroupService  SHARED )
+target_sources(chatgroupService PRIVATE
+        ${SOURCE_FILES})
 TARGET_LINK_LIBRARIES(chatgroupService pthread sqlite3
-        "${PROJECT_SOURCE_DIR}/lib/x86_64/libcrystal.so"
-        "${PROJECT_SOURCE_DIR}/lib/x86_64/libElastos.SDK.Contact.so"
-        "${PROJECT_SOURCE_DIR}/lib/x86_64/libPeerNode.so")
+        )

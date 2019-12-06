@@ -1,8 +1,8 @@
 #include <iostream>
 #include <thread>
-#include "ChatGroupService.h"
-#include "lib/include/PeerNode.h"
-#include "lib/include/Elastos.SDK.Contact/Contact.hpp"
+#include "./ChatGroupService.h"
+#include "../lib/include/PeerNode.h"
+#include "../lib/include/Elastos.SDK.Contact/Contact.hpp"
 using namespace elastos;
 
 int main(int argc,char *argv[]) {
