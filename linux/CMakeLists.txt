@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
-project(chatgroupService)
+#project(chatgroupService)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 set(SOURCE_FILES
         source/Tools/Log.hpp
         source/Tools/Log.cpp
@@ -30,5 +30,9 @@ LINK_DIRECTORIES("source/")
 add_library(chatgroupService  SHARED )
 target_sources(chatgroupService PRIVATE
         ${SOURCE_FILES})
-TARGET_LINK_LIBRARIES(chatgroupService pthread sqlite3
-        )
+TARGET_LINK_LIBRARIES(chatgroupService pthread sqlite3)
+
+pkg_search_module(pkg-Elastos.SDK.Contact REQUIRED Elastos.SDK.Contact)
+message(STATUS "********************************* Elastos.SDK.Contact include path: ${pkg-Elastos.SDK.Contact_INCLUDE_DIRS}")
+TARGET_INCLUDE_DIRECTORIES(chatgroupService PRIVATE "${pkg-Elastos.SDK.Contact_INCLUDE_DIRS}" )
+TARGET_LINK_LIBRARIES(chatgroupService PeerNode)
