@@ -33,6 +33,6 @@ target_sources(chatgroupService PRIVATE
 TARGET_LINK_LIBRARIES(chatgroupService pthread sqlite3)
 
 pkg_search_module(pkg-Elastos.SDK.Contact REQUIRED Elastos.SDK.Contact)
-message(STATUS "********************************* Elastos.SDK.Contact include path: ${pkg-Elastos.SDK.Contact_INCLUDE_DIRS}")
+message(STATUS "Elastos.SDK.Contact include path: ${pkg-Elastos.SDK.Contact_INCLUDE_DIRS}")
 TARGET_INCLUDE_DIRECTORIES(chatgroupService PRIVATE "${pkg-Elastos.SDK.Contact_INCLUDE_DIRS}" )
 TARGET_LINK_LIBRARIES(chatgroupService PeerNode)
