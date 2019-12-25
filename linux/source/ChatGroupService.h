@@ -11,11 +11,10 @@
 #include <ctime>
 #include <thread>
 #include <regex>
-#include "PeerNodeSDK/Connector.h"
-#include "PeerNodeSDK/PeerListener.h"
-#include "PeerNodeSDK/PeerNode.h"
+#include "Connector.h"
+#include "PeerListener.h"
+#include "PeerNode.h"
 #include "Contact.hpp"
-#include "ContactListener.hpp"
 #include "DataBase/DatabaseProxy.h"
 #include "Common/CommonVar.h"
 namespace elastos {
@@ -63,8 +62,8 @@ namespace elastos {
     public:
         ChatGroupMessageListener( ChatGroupService* chatGroupService);
         ~ChatGroupMessageListener();
-        void onEvent(ContactListener::EventArgs& event) override ;
-        void onReceivedMessage(const std::string& humanCode, ContactChannel channelType,
+        void onEvent(ElaphantContact::Listener::EventArgs& event) override ;
+        void onReceivedMessage(const std::string& humanCode, ElaphantContact::Channel channelType,
                                std::shared_ptr<ElaphantContact::Message> msgInfo) override;
     private:
         ChatGroupService*mChatGroupService;

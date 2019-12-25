@@ -47,8 +47,8 @@ namespace elastos {
             mCreaterFriendId = member_info->mFriendid;
             printf("ChatGroupService Start mCreaterFriendId: %s\n",mCreaterFriendId.c_str());
         }
-        int status = PeerNode::GetInstance()->GetStatus();
-        printf("ChatGroupService Start status: %d\n",status);
+        auto status = PeerNode::GetInstance()->GetStatus();
+        printf("ChatGroupService Start status: %d\n",static_cast<int>(status));
         std::shared_ptr<ElaphantContact::UserInfo> user_info = mConnector->GetUserInfo();
         if (user_info.get() != NULL) {
             user_info->getHumanCode(mOwnerHumanCode);
@@ -375,7 +375,7 @@ namespace elastos {
 
     }
 
-    void ChatGroupMessageListener::onEvent(ContactListener::EventArgs& event) {
+    void ChatGroupMessageListener::onEvent(ElaphantContact::Listener::EventArgs& event) {
         Log::W(ChatGroupService_TAG, "onEvent type: %d\n", event.type);
         switch (event.type) {
             case ElaphantContact::Listener::EventType::FriendRequest: {
@@ -410,7 +410,7 @@ namespace elastos {
         }
     };
 
-    void ChatGroupMessageListener::onReceivedMessage(const std::string& humanCode, ContactChannel channelType,
+    void ChatGroupMessageListener::onReceivedMessage(const std::string& humanCode, ElaphantContact::Channel channelType,
                                                      std::shared_ptr<ElaphantContact::Message> msgInfo) {
 
         auto text_data = dynamic_cast<ElaphantContact::Message::TextData*>(msgInfo->data.get());

@@ -20,11 +20,7 @@ set(SOURCE_FILES
         source/ChatGroupService.cpp
         source/ErrCode.cpp
         source/ErrCode.h)
-set(CHATGROUP_LIB_INCLUDE lib/include)
-INCLUDE_DIRECTORIES(${CHATGROUP_LIB_INCLUDE})
 INCLUDE_DIRECTORIES(source/)
-INCLUDE_DIRECTORIES(lib/include/Elastos.SDK.Contact)
-INCLUDE_DIRECTORIES(lib/include/Elastos.SDK.Keypair.C)
 LINK_DIRECTORIES("source/")
 
 add_library(ChatGroupService  SHARED )
