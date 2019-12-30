@@ -10,7 +10,7 @@
 
 #include <fstream>
 #include <sstream>
-#include "Log.hpp"
+#include "../Tools/Log.hpp"
 namespace elastos {
 /***********************************************/
 /***** static variables initialize *************/

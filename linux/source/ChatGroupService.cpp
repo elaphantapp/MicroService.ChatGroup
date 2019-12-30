@@ -20,8 +20,8 @@ namespace elastos {
     /***********************************************/
     /***** static function implement ***************/
     /***********************************************/
-    ChatGroupService::ChatGroupService(const std::string& path)
-            : mPath(path), mCreaterFriendId(""){
+    ChatGroupService::ChatGroupService(const std::string& path, const std::string& info_path)
+            : mPath(path), mInfoPath(info_path),mCreaterFriendId(""){
         mDatabaseProxy = new chatgroup::DatabaseProxy();
         //anypeer Id format
         std::string reg_str("(\\w{8})-(\\w{4})-(\\w{4})-(\\w{4})-(\\w{13})");
@@ -39,20 +39,28 @@ namespace elastos {
 
     int ChatGroupService::Start() {
         if (mConnector == NULL) return -1;
-        printf("Service start!\n");
+        Log::D(ChatGroupService_TAG, "Service start!\n");
         std::shared_ptr<PeerListener::MessageListener> message_listener = std::make_shared<ChatGroupMessageListener>(this);
         mConnector->SetMessageListener(message_listener);
         std::shared_ptr<chatgroup::MemberInfo> member_info = mDatabaseProxy->getMemberInfo(1);
         if (member_info.get() != nullptr) {
             mCreaterFriendId = member_info->mFriendid;
-            printf("ChatGroupService Start mCreaterFriendId: %s\n",mCreaterFriendId.c_str());
+            Log::D(ChatGroupService_TAG, "ChatGroupService Start mCreaterFriendId: %s\n",mCreaterFriendId.c_str());
         }
-        int status = PeerNode::GetInstance()->GetStatus();
-        printf("ChatGroupService Start status: %d\n",status);
+        auto status = PeerNode::GetInstance()->GetStatus();
+        Log::D(ChatGroupService_TAG, "ChatGroupService Start status: %d\n",static_cast<int>(status));
         std::shared_ptr<ElaphantContact::UserInfo> user_info = mConnector->GetUserInfo();
         if (user_info.get() != NULL) {
             user_info->getHumanCode(mOwnerHumanCode);
-            printf("Service start mOwnerHumanCode:%s\n", mOwnerHumanCode.c_str());
+            Log::D(ChatGroupService_TAG, "Service start mOwnerHumanCode:%s\n", mOwnerHumanCode.c_str());
+            //save service info to local file
+            std::shared_ptr<Json> user_info_json = std::make_shared<Json>();
+            user_info->toJson(user_info_json);
+            std::string user_info_str = user_info_json->dump();
+            int data_length = user_info_str.length();
+            uint8_t data[data_length];
+            std::copy(std::begin(user_info_str), std::end(user_info_str), data);
+            FileUtils::writeToFile(mInfoPath.c_str(), data, data_length) ;
         }
         return 0;
     }
@@ -60,7 +68,7 @@ namespace elastos {
     int ChatGroupService::Stop() {
         mDatabaseProxy->closeDb();
         if (mConnector == NULL) return -1;
-        printf("Service stop!\n");
+        Log::D(ChatGroupService_TAG, "Service stop!\n");
         return 0;
     }
     std::time_t ChatGroupService::getTimeStamp() {
@@ -105,7 +113,7 @@ namespace elastos {
             std::shared_ptr<std::vector<std::shared_ptr<chatgroup::MessageInfo>>> message_list = mDatabaseProxy->getMessages(
                     memberInfo->mFriendid, memberInfo->mMsgTimeStamp, 100);
             if (message_list.get() != nullptr) {
-                printf("relayMessages mFriendid:%s, message_list->size():%ld\n",
+                Log::D(ChatGroupService_TAG, "relayMessages mFriendid:%s, message_list->size():%ld\n",
                        memberInfo->mFriendid.c_str(), message_list->size());
                 for (int i = 0; i < message_list->size(); i++) {
                     std::shared_ptr<chatgroup::MessageInfo> message = message_list->at(i);
@@ -123,7 +131,7 @@ namespace elastos {
                             target_memberInfo->UnLock();
                         }
                         int msg_ret = mConnector->SendMessage(memberInfo->mFriendid, respJson.dump());
-                        printf("relayMessages mFriendid:%s, response:%s, msg_ret:%d\n",
+                        Log::D(ChatGroupService_TAG, "relayMessages mFriendid:%s, response:%s, msg_ret:%d\n",
                                 memberInfo->mFriendid.c_str(), respJson.dump().c_str(), msg_ret);
                         if (msg_ret != 0) {
                             break;
@@ -375,7 +383,7 @@ namespace elastos {
 
     }
 
-    void ChatGroupMessageListener::onEvent(ContactListener::EventArgs& event) {
+    void ChatGroupMessageListener::onEvent(ElaphantContact::Listener::EventArgs& event) {
         Log::W(ChatGroupService_TAG, "onEvent type: %d\n", event.type);
         switch (event.type) {
             case ElaphantContact::Listener::EventType::FriendRequest: {
@@ -410,7 +418,7 @@ namespace elastos {
         }
     };
 
-    void ChatGroupMessageListener::onReceivedMessage(const std::string& humanCode, ContactChannel channelType,
+    void ChatGroupMessageListener::onReceivedMessage(const std::string& humanCode, ElaphantContact::Channel channelType,
                                                      std::shared_ptr<ElaphantContact::Message> msgInfo) {
 
         auto text_data = dynamic_cast<ElaphantContact::Message::TextData*>(msgInfo->data.get());
@@ -418,17 +426,17 @@ namespace elastos {
         try {
             Json json = Json::parse(content);
             std::string msg_content = json["content"];
-            printf("ChatGroupMessageListener onReceivedMessage humanCode: %s,msg_content:%s \n", humanCode.c_str(), msg_content.c_str());
+            Log::D(ChatGroupService_TAG, "ChatGroupMessageListener onReceivedMessage humanCode: %s,msg_content:%s \n", humanCode.c_str(), msg_content.c_str());
             mChatGroupService->addMessage(humanCode,
                                           msg_content, mChatGroupService->getTimeStamp());
         } catch (const std::exception& e) {
-            printf("ChatGroupMessageListener parse json failed\n");
+            Log::D(ChatGroupService_TAG, "ChatGroupMessageListener parse json failed\n");
         }
     }
 
     extern "C" {
-    ChatGroupService* CreateService(const char* path) {
-        return new ChatGroupService(path);
+    ChatGroupService* CreateService(const char* path, const char* info_path) {
+        return new ChatGroupService(path, info_path);
     }
 
     void DestroyService(ChatGroupService* service) {

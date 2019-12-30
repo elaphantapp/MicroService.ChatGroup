@@ -11,18 +11,18 @@
 #include <ctime>
 #include <thread>
 #include <regex>
-#include "PeerNodeSDK/Connector.h"
-#include "PeerNodeSDK/PeerListener.h"
-#include "PeerNodeSDK/PeerNode.h"
+#include "Connector.h"
+#include "PeerListener.h"
+#include "PeerNode.h"
 #include "Contact.hpp"
-#include "ContactListener.hpp"
 #include "DataBase/DatabaseProxy.h"
 #include "Common/CommonVar.h"
+#include "Common/FileUtils.hpp"
 namespace elastos {
     static const char *ChatGroupService_TAG = "ChatGroupService";
     class ChatGroupService:public std::enable_shared_from_this<ChatGroupService>{
     public:
-        ChatGroupService(const std::string& path);
+        ChatGroupService(const std::string& path,const std::string& info_path);
         ~ChatGroupService();
         int acceptFriend(const std::string& friendid);
         bool inRemovedList(const std::string& friendid);
@@ -43,6 +43,7 @@ namespace elastos {
         std::string mOwnerHumanCode;
     protected:
         std::string mPath;
+        std::string mInfoPath;
     private:
         std::string convertDatetimeToString(std::time_t time);
         bool relayMessages();
@@ -63,15 +64,15 @@ namespace elastos {
     public:
         ChatGroupMessageListener( ChatGroupService* chatGroupService);
         ~ChatGroupMessageListener();
-        void onEvent(ContactListener::EventArgs& event) override ;
-        void onReceivedMessage(const std::string& humanCode, ContactChannel channelType,
+        void onEvent(ElaphantContact::Listener::EventArgs& event) override ;
+        void onReceivedMessage(const std::string& humanCode, ElaphantContact::Channel channelType,
                                std::shared_ptr<ElaphantContact::Message> msgInfo) override;
     private:
         ChatGroupService*mChatGroupService;
     };
 
     extern "C" {
-        ChatGroupService* CreateService(const char* path);
+        ChatGroupService* CreateService(const char* path, const char* info_path);
         void DestroyService(ChatGroupService* service);
     }
 }
