@@ -49,6 +49,7 @@ namespace elastos {
         }
         auto status = PeerNode::GetInstance()->GetStatus();
         Log::D(ChatGroupService_TAG, "ChatGroupService Start status: %d\n",static_cast<int>(status));
+
         std::shared_ptr<ElaphantContact::UserInfo> user_info = mConnector->GetUserInfo();
         if (user_info.get() != NULL) {
             user_info->getHumanCode(mOwnerHumanCode);
