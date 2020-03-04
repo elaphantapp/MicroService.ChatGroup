@@ -122,7 +122,7 @@ namespace elastos {
                             respJson["timeStamp"] = this->convertDatetimeToString(message->mSendTimeStamp);
                             target_memberInfo->UnLock();
                         }
-                        int msg_ret = mConnector->SendMessage(memberInfo->mFriendid, respJson.dump());
+                        int msg_ret = mConnector->SendMessage(memberInfo->mFriendid, ElaphantContact::Channel::Carrier, respJson.dump());
                         printf("relayMessages mFriendid:%s, response:%s, msg_ret:%d\n",
                                 memberInfo->mFriendid.c_str(), respJson.dump().c_str(), msg_ret);
                         if (msg_ret != 0) {
@@ -217,7 +217,7 @@ namespace elastos {
             respJson["serviceName"] = ChatGroupService_TAG;
             respJson["type"] = "textMsg";
             respJson["content"] = message;
-            int ret = mConnector->SendMessage(friend_id, respJson.dump());
+            int ret = mConnector->SendMessage(friend_id, ElaphantContact::Channel::Carrier, respJson.dump());
             if (ret != 0) {
                 Log::I(ChatGroupService_TAG,
                        "helpCmd .c_str(): %s errno:(0x%x)",
@@ -248,7 +248,7 @@ namespace elastos {
             respJson["serviceName"] = ChatGroupService_TAG;
             respJson["type"] = "textMsg";
             respJson["content"] = ret_msg_str;
-            int ret = mConnector->SendMessage(friend_id, respJson.dump());
+            int ret = mConnector->SendMessage(friend_id, ElaphantContact::Channel::Carrier, respJson.dump());
             if (ret != 0) {
                 Log::I(ChatGroupService_TAG,
                        "listCmd .c_str(): %s errno:(0x%x)",
@@ -331,7 +331,7 @@ namespace elastos {
                 respJson["serviceName"] = ChatGroupService_TAG;
                 respJson["type"] = "textMsg";
                 respJson["content"] = msg_str;
-                mConnector->SendMessage(friend_id, respJson.dump());
+                mConnector->SendMessage(friend_id, ElaphantContact::Channel::Carrier, respJson.dump());
             }
         }
     }
@@ -362,7 +362,7 @@ namespace elastos {
                 respJson["serviceName"] = ChatGroupService_TAG;
                 respJson["type"] = "textMsg";
                 respJson["content"] = msg_str;
-                mConnector->SendMessage(friend_id, respJson.dump());
+                mConnector->SendMessage(friend_id, ElaphantContact::Channel::Carrier, respJson.dump());
             }
         }
     }
